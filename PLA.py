@@ -28,23 +28,30 @@ def hypothesis(x, w):
 def trainPLA(iterationLimit, training_points):
     convCount = 0
     w =[0]*3
-    learned = False
-    def updateWeights():
-            for np.random.choice(training_points) in training_points:
-                if(np.sign(hypothesis(pnt, w)) != pnt[3]):
-                    w[0] = w[0] + (pnt[3] * pnt[0])
-                    w[1] = w[1] + (pnt[3] * pnt[1])
-                    w[2] = w[2] + (pnt[3] * pnt[2])
-                    return False
-            return True
-    while not learned:
-        convCount += 1
-        noErrors = updateWeights()
-        if convCount == iterationLimit or noErrors:
-            learned = True
-            break
+    pointsNum = 0
+    #learned = False
+    randPoints = training_points.copy()
 
-        return convCount, w
+    while(True):
+        errorCount = 0
+        #for pnt in randPoints:
+        pnt = randPoints[np.random.randint(0,len(randPoints)-1)]
+        if(np.sign(hypothesis(pnt, w)) != pnt[3]):
+            errorCount += 1
+            w[0] = w[0] + (pnt[3] * pnt[0])
+            w[1] = w[1] + (pnt[3] * pnt[1])
+            w[2] = w[2] + (pnt[3] * pnt[2])
+        pointsNum += 1
+        if (errorCount == 0 and pointsNum <= len(training_points)):
+            randPoints.remove(pnt)
+            convCount = convCount + 1
+        if errorCount > 0:
+            convCount = convCount + 1
+        if(pointsNum > len(training_points)):
+            if ((convCount == iterationLimit) or errorCount == 0):
+                break
+
+    return convCount, w
 
 def findErrorProbability(x1,y1,x2,y2, weights, numberOfPointsToTest):
     numberOfErrors = 0
@@ -63,7 +70,7 @@ def main():
     x1,x2,y1,y2,training_points = createPoints(N)
     count = []
     errorProb = []
-    for _ in range(1000):
+    for _ in range(10):
         c, weight = trainPLA(1000, training_points)
         err = findErrorProbability(x1,x2,y1,y2, weight, N)
         count.append(c)
