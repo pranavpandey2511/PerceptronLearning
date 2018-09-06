@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 
-
+#This function creates random points for the dataset
 def createPoints(N):
     r = np.random.uniform(-1,1,10)
+    test =[]
     points = []
 
     x1, x2, y1, y2 = np.random.choice(r,4)  #Target Function
